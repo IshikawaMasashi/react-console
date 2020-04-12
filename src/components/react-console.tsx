@@ -110,6 +110,43 @@ const Console = forwardRef<ForwardedRef, ConsoleProps>((props, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const focusRef = useRef<HTMLDivElement>(null);
 
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+    const rect = focusRef.current!.getBoundingClientRect();
+    if (
+      rect.top < 0 ||
+      rect.left < 0 ||
+      rect.bottom >
+        (window.innerHeight || document.documentElement.clientHeight) ||
+      rect.right > (window.innerWidth || document.documentElement.clientWidth)
+    ) {
+      typerRef.current!.scrollIntoView(false);
+    }
+  };
+
+  // DOM management
+  const scrollSemaphoreRef = useRef(0);
+
+  const scrollIfBottomTrue = () => {
+    scrollToBottom();
+    scrollSemaphoreRef.current--;
+  };
+
+  const scrollIfBottom = () => {
+    if (
+      scrollSemaphoreRef.current > 0 ||
+      containerRef.current!.scrollTop ==
+        containerRef.current!.scrollHeight - containerRef.current!.offsetHeight
+    ) {
+      scrollSemaphoreRef.current++;
+      return scrollIfBottomTrue();
+    } else {
+      return null;
+    }
+  };
+
   // Command API
   const log = (...messages: any[]) => {
     const log = state.log;
@@ -145,7 +182,7 @@ const Console = forwardRef<ForwardedRef, ConsoleProps>((props, ref) => {
     if (!window.getSelection) {
       return;
     }
-    if (!window.getSelection()!.toString()) {
+    if (!window.getSelection()?.toString()) {
       typerRef.current!.focus();
       setState({ ...state, focus: true });
       scrollToBottom();
@@ -1070,37 +1107,6 @@ const Console = forwardRef<ForwardedRef, ConsoleProps>((props, ref) => {
       searchDirection: direction,
       searchInit: false,
     };
-  };
-  // DOM management
-  const scrollSemaphoreRef = useRef(0);
-  const scrollIfBottom = () => {
-    if (
-      scrollSemaphoreRef.current > 0 ||
-      containerRef.current!.scrollTop ==
-        containerRef.current!.scrollHeight - containerRef.current!.offsetHeight
-    ) {
-      scrollSemaphoreRef.current++;
-      return scrollIfBottomTrue();
-    } else {
-      return null;
-    }
-  };
-  const scrollIfBottomTrue = () => {
-    scrollToBottom();
-    scrollSemaphoreRef.current--;
-  };
-  const scrollToBottom = () => {
-    containerRef.current!.scrollTop = containerRef.current!.scrollHeight;
-    const rect = focusRef.current!.getBoundingClientRect();
-    if (
-      rect.top < 0 ||
-      rect.left < 0 ||
-      rect.bottom >
-        (window.innerHeight || document.documentElement.clientHeight) ||
-      rect.right > (window.innerWidth || document.documentElement.clientWidth)
-    ) {
-      typerRef.current!.scrollIntoView(false);
-    }
   };
 
   // コンポーネントのインスタンスが持つメソッドを宣言

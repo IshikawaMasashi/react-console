@@ -34,6 +34,7 @@
     "url": "https://github.com/fkhadra/react-console/issues"
   },
   "devDependencies": {
+    "@material-ui/core": "^4.9.10",
     "@material-ui/icons": "^4.9.1",
     "@types/classnames": "^2.2.10",
     "@types/enzyme": "^3.10.5",
@@ -85,7 +86,6 @@
     "react-dom": ">=16.13.1"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.10",
     "classnames": "^2.2.6",
     "npm-check-updates": "^4.1.2",
     "prop-types": "^15.7.2"
